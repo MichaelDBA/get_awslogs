@@ -28,9 +28,9 @@ Parameters:
 `-l LOGDIR`      fully qualified path to the log directory where downloaded logs are stored.
 <br/><br/>
 ## Examples
-getawslogs.sh -p prod -f alliance-cdb-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+getawslogs.sh -p prod -f myinst-db-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
 <br/>
-getawslogs.sh -p prod -f alliance-cdb-prd -a RUN -n 06    -d 2021-03-29 -l /var/lib/pgsql/als/logs
+getawslogs.sh -p prod -f myinst-db-prd -a RUN -n 06    -d 2021-03-29 -l /var/lib/pgsql/als/logs
 <br/>
-getawslogs.sh -p prod -f alliance-cdb-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+getawslogs.sh -p prod -f myinst-db-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
 <br/>
