@@ -1,9 +1,6 @@
 #!/bin/bash
 # getawslogs.sh
 # https://docs.aws.amazon.com/cli/latest/reference/rds/describe-db-log-files.html
-# getawslogs.sh -p prod -f alliance-cdb-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
-# getawslogs.sh -p prod -f alliance-cdb-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
-# error/postgresql.log.2021-03-28-22
 
 while getopts p:f:a:n:d:l: option
 do
@@ -50,9 +47,6 @@ echo "Using profile=$PROFILE  DBID=$DBID  action=$ACTION  numlogs=$NUMLOGS  DATE
 today=`date +"%Y-%m-%d"`
 echo "Getting candidate logs for date: $DATE"
 
-#for filename in $( aws rds describe-db-log-files --db-instance-identifier dfx-aurora-dev-2-1 --file-size 1  $range| grep -i logfilename | cut -f2 -d: |  tr -d ',' | tr -d '"')
-#LOGLIST=`aws rds describe-db-log-files --db-instance-identifier dfx-aurora-dev-2-1 --file-size 1 --filename-contains '2021-02-18' | grep -i logfilename | cut -f2 -d: |  tr -d ',' | tr -d '\"'`
-#LOGLIST=`aws rds describe-db-log-files --db-instance-identifier alliance-cdb-prd --profile $PROFILE --file-size 1 --filename-contains $DATE | grep -i logfilename | cut -f2 -d: |  tr -d ',' | tr -d '\"'`
 LOGLIST=`aws rds describe-db-log-files --db-instance-identifier $DBID --profile $PROFILE --file-size 1 --filename-contains $DATE | grep -i logfilename | cut -f2 -d: |  tr -d ',' | tr -d '\"'`
 #echo $LOGLIST
 i=0
