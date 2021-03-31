@@ -14,12 +14,18 @@ Please provide example code along with issues reported if possible.
 This bash script encapsulates downloading PostgreSQL logs from AWS. 
 
 Parameters:
--p PROFILE: AWS profile from AWS config file
--f DBID: AWS DB Identifier
--a ACTION: RUN or PRINT
--n NUMLOGS: ALL or specific hour suffix
--d DATE: DATE in format, yyyy-mm-dd
--l LOGDIR: fully qualified path to the log directory where downloaded logs are stored.
+<br/>
+`-p PROFILE`     AWS profile from AWS config file
+<br/>
+`-f DBID`        AWS DB Identifier
+<br/>
+`-a ACTION`      RUN or PRINT
+<br/>
+`-n NUMLOGS`     ALL or specific hour suffix
+<br/>
+`-d DATE`        DATE in format, yyyy-mm-dd
+<br/>
+`-l LOGDIR`      fully qualified path to the log directory where downloaded logs are stored.
 <br/><br/>
 ## Examples
 getawslogs.sh -p prod -f alliance-cdb-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
