@@ -1,6 +1,17 @@
 #!/bin/bash
 # getawslogs.sh
+# Version 1.0
 # https://docs.aws.amazon.com/cli/latest/reference/rds/describe-db-log-files.html
+# getawslogs.sh -p prod -f myinst-db-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+# getawslogs.sh -p prod -f myinst-db-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+# expected file format: error/postgresql.log.2021-03-28-22
+# describe returns json list like this:
+# {
+#            "LogFileName": "error/postgresql.log.2020-11-18-12",
+#            "LastWritten": 1605704400000,
+#            "Size": 81860452
+# },
+###################################################################################################
 
 while getopts p:f:a:n:d:l: option
 do
@@ -43,9 +54,13 @@ elif [ "$ACTION" != "RUN" ] && [ "$ACTION" != "PRINT" ]; then
     exit 1
 fi
 
-echo "Using profile=$PROFILE  DBID=$DBID  action=$ACTION  numlogs=$NUMLOGS  DATE=$DATE  LOGDIR=$LOGDIR"
+echo "*** Version=1.0  profile=$PROFILE  DBID=$DBID  action=$ACTION  numlogs=$NUMLOGS  DATE=$DATE  LOGDIR=$LOGDIR ***"
 today=`date +"%Y-%m-%d"`
-echo "Getting candidate logs for date: $DATE"
+# if [[ "$NUMLOGS" == "ALL" ]]; then
+#     echo "Getting all logs for date: $DATE"
+# else
+#     echo "Getting specific log ($NUMLOGS) for date: $DATE"
+# fi
 
 LOGLIST=`aws rds describe-db-log-files --db-instance-identifier $DBID --profile $PROFILE --file-size 1 --filename-contains $DATE | grep -i logfilename | cut -f2 -d: |  tr -d ',' | tr -d '\"'`
 #echo $LOGLIST
@@ -57,15 +72,18 @@ while IFS=' ' read -ra ADDR; do
     #newfile="\"$alog\""
     if [[ "$NUMLOGS" != "ALL" ]]; then
        if [[ "$alog" != *"$NUMLOGS" ]]; then
-           echo "bypassing log,   $alog"
+           # echo "bypassing log,   $alog"
            continue
        fi
     fi
     if [ $ACTION == "RUN" ]; then
         echo "downloading log, $alog"
-        aws rds download-db-log-file-portion --db-instance-identifier alliance-cdb-prd --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log
+        # aws rds download-db-log-file-portion --db-instance-identifier alliance-cdb-prd --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log
+        aws rds download-db-log-file-portion --db-instance-identifier $DBID --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log
     elif [ $ACTION == "PRINT" ]; then
-        echo "aws rds download-db-log-file-portion --db-instance-identifier alliance-cdb-prd --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log"
+        # echo "printing getlog command, $alog"
+        # echo "aws rds download-db-log-file-portion --db-instance-identifier alliance-cdb-prd --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log"
+        echo "aws rds download-db-log-file-portion --db-instance-identifier $DBID --profile $PROFILE --log-file-name $alog  --starting-token 0 --output text > $LOGDIR/$outfile.log"
     fi
 
     ((i=i+1))
