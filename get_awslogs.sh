@@ -2,8 +2,9 @@
 # getawslogs.sh
 # Version 1.0
 # https://docs.aws.amazon.com/cli/latest/reference/rds/describe-db-log-files.html
-# getawslogs.sh -p prod -f myinst-db-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
-# getawslogs.sh -p prod -f myinst-db-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+# get_awslogs.sh -p prod -f myinst-db-prd -a RUN   -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+# get_awslogs.sh -p prod -f myinst-db-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+# get_awslogs.sh -p prod -f myinst-db-prd -a PRINT -n 12  -d 2021-03-29 -l /var/lib/pgsql/als/logs
 # expected file format: error/postgresql.log.2021-03-28-22
 # describe returns json list like this:
 # {
@@ -12,6 +13,22 @@
 #            "Size": 81860452
 # },
 ###################################################################################################
+VERSION=1.0
+usage()
+{
+cat << EOF
+usage: $0 options
+get_awslogs.sh Version ${VERSION}.  This script simplifies getting PostgreSQL log files from AWS using AWS CLI APIs.
+OPTIONS:
+   -p      PROFILE: AWS Profile Name (.aws/config file)
+   -f      DBID:    AWS DB Identifier
+   -a      ACTION:  RUN/PRINT
+   -n      NUMLOGS: ALL or suffix hour of log file name
+   -d      DATE:    Date of logs
+   -l      LOGDIR:  output log directory
+example:   get_awslogs.sh -p prod -f myinst-db-prd -a PRINT -n ALL -d 2021-03-29 -l /var/lib/pgsql/als/logs
+EOF
+}
 
 while getopts p:f:a:n:d:l: option
 do
@@ -23,6 +40,7 @@ a) ACTION=${OPTARG};;
 n) NUMLOGS=${OPTARG};;
 d) DATE=${OPTARG};;
 l) LOGDIR=${OPTARG};;
+?) usage;exit 1;;
 esac
 done
 args=$#
@@ -54,7 +72,7 @@ elif [ "$ACTION" != "RUN" ] && [ "$ACTION" != "PRINT" ]; then
     exit 1
 fi
 
-echo "*** Version=1.0  profile=$PROFILE  DBID=$DBID  action=$ACTION  numlogs=$NUMLOGS  DATE=$DATE  LOGDIR=$LOGDIR ***"
+echo "*** Version=$VERSION  profile=$PROFILE  DBID=$DBID  action=$ACTION  numlogs=$NUMLOGS  DATE=$DATE  LOGDIR=$LOGDIR ***"
 today=`date +"%Y-%m-%d"`
 # if [[ "$NUMLOGS" == "ALL" ]]; then
 #     echo "Getting all logs for date: $DATE"
